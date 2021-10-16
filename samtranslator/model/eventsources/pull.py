@@ -43,7 +43,7 @@ class PullEventSource(ResourceMacro):
         "TumblingWindowInSeconds": PropertyType(False, is_type(int)),
         "FunctionResponseTypes": PropertyType(False, is_type(list)),
         "KafkaBootstrapServers": PropertyType(False, is_type(list)),
-        "SourceAccessSubnets": PropertyType(False, is_type(list))
+        "SourceAccessSubnets": PropertyType(False, is_type(list)),
         "SourceAccessSecurityGroups": PropertyType(False, is_type(list))
     }
 
