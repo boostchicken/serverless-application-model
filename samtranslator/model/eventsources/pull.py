@@ -91,10 +91,14 @@ class PullEventSource(ResourceMacro):
 
         
         if self.SourceAccessSubnets:
+            if not self.SourceAccessConfigurations:
+                self.SourceAccessConfigurations = []
             for subnet_id in self.SourceAccessSubnets:
-                self.SourceAccessConfigurations = {"Type":"VPC_SUBNET","URI"="subnet:"+subnet_id}
+                self.SourceAccessConfigurations.append({"Type":"VPC_SUBNET","URI"="subnet:"+subnet_id})
         
         if self.SourceAccessSecurityGroups:
+            if not self.SourceAccessConfigurations:
+                self.SourceAccessConfigurations = []
             for sg_id in self.SourceAccessSecurityGroups:
                 self.SourceAccessConfigurations = {"Type":"VPC_SECURITY_GROUP","URI"="security_group:"+sg_id}
                        
