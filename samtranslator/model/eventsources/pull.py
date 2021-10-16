@@ -90,6 +90,14 @@ class PullEventSource(ResourceMacro):
             raise InvalidEventException(self.relative_id, "StartingPosition is required for Kinesis, DynamoDB and MSK.")
 
         
+        if self.SourceAccessSubnets:
+            for subnet_id in self.SourceAccessSubnets:
+                self.SourceAccessConfigurations = {"Type":"VPC_SUBNET","URI"="subnet:"+subnet_id}
+        
+        if self.SourceAccessSecurityGroups:
+            for sg_id in self.SourceAccessSecurityGroups:
+                self.SourceAccessConfigurations = {"Type":"VPC_SECURITY_GROUP","URI"="security_group:"+sg_id}
+                       
         lambda_eventsourcemapping.FunctionName = function_name_or_arn
         lambda_eventsourcemapping.EventSourceArn = self.Stream or self.Queue or self.Broker
         lambda_eventsourcemapping.StartingPosition = self.StartingPosition
@@ -106,14 +114,6 @@ class PullEventSource(ResourceMacro):
         lambda_eventsourcemapping.TumblingWindowInSeconds = self.TumblingWindowInSeconds
         lambda_eventsourcemapping.FunctionResponseTypes = self.FunctionResponseTypes
 
-        if self.SourceAccessSubnets:
-            for subnet_id in self.SourceAccessSubnets:
-                self.SourceAccessConfigurations.append({"Type":"VPC_SUBNET","URI"="subnet:"+subnet_id)
-        
-        if self.SourceAccessSecurityGroups:
-            for sg_id in self.SourceAccessSecurityGroups:
-                self.SourceAccessConfigurations.append({"Type":"VPC_SECURITY_GROUP","URI"="security_group:"+sg_id)
-               
         if self.KafkaBootstrapServers:
             lambda_eventsourcemapping.SelfManagedEventSource = {
                 "Endpoints": {"KafkaBootstrapServers": self.KafkaBootstrapServers}
