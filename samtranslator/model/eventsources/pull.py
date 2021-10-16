@@ -378,8 +378,8 @@ class SelfManagedKafka(PullEventSource):
 
     def get_secret_key(self):
         authentication_uri = None
-        has_vpc_subnet = False
-        has_vpc_security_group = False
+        has_vpc_subnet = not self.SourceAccessSubnets
+        has_vpc_security_group = not self.SourceAccessSecurityGroups
         for config in self.SourceAccessConfigurations:
             if config.get("Type") == "VPC_SUBNET":
                 self.validate_uri(config, "VPC_SUBNET")
