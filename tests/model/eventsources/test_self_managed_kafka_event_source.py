@@ -50,6 +50,8 @@ class SelfManagedKafkaEventSource(TestCase):
         ]
 
         self.assertEqual(policy_statements, expected_policy_document)
+        del self.SourceAccessSubnets
+        del self.SourceAccessSecurityGroups
 
     def test_get_policy_statements_with_only_auth_mechanism(self):
         self.kafka_event_source.SourceAccessConfigurations = [
