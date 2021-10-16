@@ -94,13 +94,13 @@ class PullEventSource(ResourceMacro):
             if not self.SourceAccessConfigurations:
                 self.SourceAccessConfigurations = []
             for subnet_id in self.SourceAccessSubnets:
-                self.SourceAccessConfigurations.append({"Type":"VPC_SUBNET","URI"="subnet:"+subnet_id})
+                self.SourceAccessConfigurations.append({"Type": "VPC_SUBNET","URI": "subnet:"+subnet_id})
         
         if self.SourceAccessSecurityGroups:
             if not self.SourceAccessConfigurations:
                 self.SourceAccessConfigurations = []
             for sg_id in self.SourceAccessSecurityGroups:
-                self.SourceAccessConfigurations = {"Type":"VPC_SECURITY_GROUP","URI"="security_group:"+sg_id}
+                self.SourceAccessConfigurations = {"Type": "VPC_SECURITY_GROUP","URI": "security_group:"+sg_id}
                        
         lambda_eventsourcemapping.FunctionName = function_name_or_arn
         lambda_eventsourcemapping.EventSourceArn = self.Stream or self.Queue or self.Broker
