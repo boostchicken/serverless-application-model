@@ -15,10 +15,10 @@ class SelfManagedKafkaEventSource(TestCase):
 
     def test_get_policy_statements(self):
         self.kafka_event_source.SourceAccessConfigurations = [
-            {"Type": "SASL_SCRAM_256_AUTH", "URI": "SECRET_URI"},
-            {"Type": "VPC_SUBNET", "URI": "SECRET_URI"},
-            {"Type": "VPC_SECURITY_GROUP", "URI": "SECRET_URI"},
+            {"Type": "SASL_SCRAM_256_AUTH", "URI": "SECRET_URI"}
         ]
+        self.kafka_event_source.SourceAccessSubnets = ["SECRET_URI"]
+        self.kafka_event_source.SourceAccessSecurityGroups = ["SECRET_URI"]
         self.kafka_event_source.Topics = ["Topics"]
         self.kafka_event_source.KafkaBootstrapServers = ["endpoint1", "endpoint2"]
         self.kafka_event_source.Enabled = True
@@ -50,6 +50,8 @@ class SelfManagedKafkaEventSource(TestCase):
         ]
 
         self.assertEqual(policy_statements, expected_policy_document)
+        del self.kafka_event_source.SourceAccessSubnets
+        del self.kafka_event_source.SourceAccessSecurityGroups
 
     def test_get_policy_statements_with_only_auth_mechanism(self):
         self.kafka_event_source.SourceAccessConfigurations = [

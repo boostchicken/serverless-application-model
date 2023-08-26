@@ -43,6 +43,8 @@ class PullEventSource(ResourceMacro):
         "TumblingWindowInSeconds": PropertyType(False, is_type(int)),
         "FunctionResponseTypes": PropertyType(False, is_type(list)),
         "KafkaBootstrapServers": PropertyType(False, is_type(list)),
+        "SourceAccessSubnets": PropertyType(False, is_type(list)),
+        "SourceAccessSecurityGroups": PropertyType(False, is_type(list))
     }
 
     def get_policy_arn(self):
@@ -87,6 +89,19 @@ class PullEventSource(ResourceMacro):
         if self.Stream and not self.StartingPosition:
             raise InvalidEventException(self.relative_id, "StartingPosition is required for Kinesis, DynamoDB and MSK.")
 
+        
+        if self.SourceAccessSubnets:
+            if not self.SourceAccessConfigurations:
+                self.SourceAccessConfigurations = []
+            for subnet_id in self.SourceAccessSubnets:
+                self.SourceAccessConfigurations.append({"Type": "VPC_SUBNET","URI": "subnet:"+subnet_id})
+        
+        if self.SourceAccessSecurityGroups:
+            if not self.SourceAccessConfigurations:
+                self.SourceAccessConfigurations = []
+            for sg_id in self.SourceAccessSecurityGroups:
+                self.SourceAccessConfigurations.append({"Type": "VPC_SECURITY_GROUP","URI": "security_group:"+sg_id})
+                       
         lambda_eventsourcemapping.FunctionName = function_name_or_arn
         lambda_eventsourcemapping.EventSourceArn = self.Stream or self.Queue or self.Broker
         lambda_eventsourcemapping.StartingPosition = self.StartingPosition
@@ -107,7 +122,7 @@ class PullEventSource(ResourceMacro):
             lambda_eventsourcemapping.SelfManagedEventSource = {
                 "Endpoints": {"KafkaBootstrapServers": self.KafkaBootstrapServers}
             }
-
+                                                 
         destination_config_policy = None
         if self.DestinationConfig:
             # `Type` property is for sam to attach the right policies
@@ -363,8 +378,8 @@ class SelfManagedKafka(PullEventSource):
 
     def get_secret_key(self):
         authentication_uri = None
-        has_vpc_subnet = False
-        has_vpc_security_group = False
+        has_vpc_subnet = not self.SourceAccessSubnets
+        has_vpc_security_group = not self.SourceAccessSecurityGroups
         for config in self.SourceAccessConfigurations:
             if config.get("Type") == "VPC_SUBNET":
                 self.validate_uri(config, "VPC_SUBNET")
